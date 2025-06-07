@@ -33,3 +33,37 @@ async def get_book_by_id(book_id: int, db: AsyncSession = Depends(get_db)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/{book_id}", response_model=dict)
+async def update_book(
+    book_id: int, book_update: BookUpdate, db: AsyncSession = Depends(get_db)
+):
+    try:
+        updated_book = await BookController.updateBook(db, book_id, book_update)
+        if not updated_book:
+            raise HTTPException(status_code=404, detail="Book Not Found")
+
+        return {
+            "message": "Book updated successfully",
+            "book": BookRead.model_validate(updated_book).model_dump(),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{book_id}", response_model=dict)
+async def delete_book(book_id: int, db: AsyncSession = Depends(get_db)):
+    try:
+        deleted = await BookController.delete_book(db, book_id)
+        if not deleted:
+            raise HTTPException(status_code=404, detail="Book not found")
+
+        return {"message": "book deleted successfully", "book_id": book_id}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

@@ -16,8 +16,8 @@ class Book(Base):
     author = Column(String(255), nullable=False, index=True)
     category = Column(String(255), nullable=False, index=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     issues = relationship("BookIssue", back_populates="book")
 
@@ -36,8 +36,8 @@ class Student(Base):
     phone = Column(String(10), nullable=False)
     email = Column(String(255), unique=True, nullable=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     issues = relationship("BookIssue", back_populates="student")
 
@@ -57,8 +57,8 @@ class BookIssue(Base):
     due_date = Column(Date, nullable=False)
     return_date = Column(Date, nullable=True)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     book = relationship("Book", back_populates="issues")
     student = relationship("Student", back_populates="issues")

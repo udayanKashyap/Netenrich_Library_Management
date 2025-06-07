@@ -1,10 +1,13 @@
 from fastapi import HTTPException
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.bookIssue import BookIssueRequest, BookReturnRequest, BookIssueResponse
-from models.models import BookIssue, Book, Student
 from typing import List, Optional
+
+from schemas.bookIssue import BookIssueRequest, BookReturnRequest, BookIssueResponse
+from schemas.book import BookRead
+from models.models import BookIssue, Book, Student
 from controllers.bookController import BookController
+from controllers.studentController import StudentController
 
 
 class BookIssueController:
@@ -85,3 +88,30 @@ class BookIssueController:
         except Exception as e:
             await db.rollback()
             raise Exception(f"Error Creating book: {str(e)}")
+
+    @staticmethod
+    async def getBooksIssuedToStudent(db: AsyncSession, student_id: int) -> List[Book]:
+        try:
+            student = await StudentController.getStudentById(db, student_id)
+            if not student:
+                raise HTTPException(status_code=404, detail="student not found")
+
+            result = await db.execute(
+                select(BookIssue.book_id).where(
+                    BookIssue.student_id == student_id,
+                    BookIssue.return_date.is_(None),
+                )
+            )
+            book_ids = result.scalars().all()
+
+            books_issued = [
+                await BookController.getBookById(db, book_id) for book_id in book_ids
+            ]
+
+            return books_issued
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            await db.rollback()
+            raise Exception(f"Error fetching books issued to student: {str(e)}")

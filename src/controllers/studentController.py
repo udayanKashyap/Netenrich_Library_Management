@@ -7,6 +7,14 @@ from typing import Optional, List
 
 class StudentController:
     @staticmethod
+    async def getStudentById(db: AsyncSession, student_id: int) -> Optional[Student]:
+        try:
+            result = await db.execute(select(Student).where(Student.id == student_id))
+            return result.scalar_one_or_none()
+        except Exception as e:
+            raise Exception(f"Error fetching book: {str(e)}")
+
+    @staticmethod
     async def createStudent(db: AsyncSession, student_data: StudentCreate) -> Student:
         try:
             new_student = Student(

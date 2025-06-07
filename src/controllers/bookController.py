@@ -10,8 +10,6 @@ class BookController:
     async def getBookById(db: AsyncSession, book_id: int) -> Optional[Book]:
         try:
             result = await db.execute(select(Book).where(Book.id == book_id))
-            print(f"\n{book_id}\n")
-            print(result)
             return result.scalar_one_or_none()
         except Exception as e:
             raise Exception(f"Error fetching book: {str(e)}")

@@ -1,9 +1,8 @@
-from sqlalchemy import create_engine, delete, select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.book import BookCreate, BookUpdate
 from models.models import Book
-from typing import Optional, List
+from typing import List, Optional
 
 
 class BookController:
@@ -28,11 +27,10 @@ class BookController:
                 author=book_data.author,
                 category=book_data.category,
             )
-            print(new_book)
-
             db.add(new_book)
             await db.commit()
             return new_book
+
         except Exception as e:
             await db.rollback()
             raise Exception(f"Error Creating book: {str(e)}")
@@ -65,7 +63,7 @@ class BookController:
             raise Exception(f"Error Updating Book: {str(e)}")
 
     @staticmethod
-    async def delete_book(db: AsyncSession, book_id: int) -> bool:
+    async def deleteBook(db: AsyncSession, book_id: int) -> bool:
         try:
             existing_book = await BookController.getBookById(db, book_id)
             if not existing_book:
@@ -78,3 +76,51 @@ class BookController:
         except Exception as e:
             await db.rollback()
             raise Exception(f"Error Updating Book: {str(e)}")
+
+    @staticmethod
+    async def searchBooks(
+        db: AsyncSession,
+        title: Optional[str] = None,
+        author: Optional[str] = None,
+        category: Optional[str] = None,
+        isbn: Optional[str] = None,
+        page: int = 1,
+        limit: int = 10,
+    ) -> tuple[List[Book], int]:
+        try:
+            query = select(Book)
+            count_query = select(Book)
+
+            if title:
+                title_filter = Book.title.ilike(f"%{title}%")
+                query = query.where(title_filter)
+                count_query = count_query.where(title_filter)
+
+            if author:
+                author_filter = Book.author.ilike(f"%{author}%")
+                query = query.where(author_filter)
+                count_query = count_query.where(author_filter)
+
+            if category:
+                category_filter = Book.category.ilike(f"%{category}%")
+                query = query.where(category_filter)
+                count_query = count_query.where(category_filter)
+
+            if isbn:
+                isbn_filter = Book.isbn == isbn
+                query = query.where(isbn_filter)
+                count_query = count_query.where(isbn_filter)
+
+            count_result = await db.execute(count_query)
+            total_count = len(count_result.scalars().all())
+
+            offset = (page - 1) * limit
+            query = query.offset(offset).limit(limit).order_by(Book.title, Book.id)
+
+            result = await db.execute(query)
+            books = result.scalars().all()
+
+            return books, total_count
+
+        except Exception as e:
+            raise Exception(f"Error searching books: {str(e)}")

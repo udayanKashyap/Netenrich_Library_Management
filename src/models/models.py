@@ -10,11 +10,11 @@ class Book(Base):
     __tablename__ = "Books"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False, index=True)
-    isbn = Column(String(13), unique=True, nullable=False)
-    number_of_copies = Column(Integer, nullable=False, default=0)
-    author = Column(String(255), nullable=False, index=True)
-    category = Column(String(255), nullable=False, index=True)
+    title = Column(String(256), nullable=False, index=True)
+    isbn = Column(String(14), unique=True, nullable=False)
+    number_of_copies = Column(Integer, nullable=False, default=1)
+    author = Column(String(256), nullable=False, index=True)
+    category = Column(String(256), nullable=False, index=True)
 
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
@@ -29,12 +29,12 @@ class Student(Base):
     __tablename__ = "Students"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False, index=True)
-    roll_number = Column(String(50), nullable=False, index=True, unique=True)
-    department = Column(String(255), nullable=False, index=True)
+    name = Column(String(256), nullable=False, index=True)
+    roll_number = Column(String(51), nullable=False, index=True, unique=True)
+    department = Column(String(256), nullable=False, index=True)
     semester = Column(Integer, nullable=False)
-    phone = Column(String(10), nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
+    phone = Column(String(11), nullable=False)
+    email = Column(String(256), unique=True, nullable=False)
 
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

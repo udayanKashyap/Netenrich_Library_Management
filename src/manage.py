@@ -1,6 +1,7 @@
+# manage.py
 import typer
 import asyncio
-from config.db import engine
+from config.db import engine  # must be an AsyncEngine
 from models.models import Base
 
 cli = typer.Typer()
@@ -12,10 +13,15 @@ async def async_migrate():
     print("Tables created.")
 
 
-@cli.command()
+@cli.command("migrate")
 def migrate():
     asyncio.run(async_migrate())
 
 
+@cli.command("test")
+def test():
+    print("tested")
+
+
 if __name__ == "__main__":
-    migrate()  # <-- This must be cli(), not migrate() or anything else
+    cli()

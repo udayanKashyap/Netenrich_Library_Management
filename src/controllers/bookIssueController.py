@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlalchemy import delete, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from datetime import date
@@ -8,9 +8,11 @@ from schemas.bookIssue import (
     BookIssueRequest,
     BookReturnRequest,
     BookIssueResponse,
+    IssueReportResponse,
     IssuedBooksResponse,
 )
 from schemas.book import BookRead
+from schemas.student import StudentRead
 from models.models import BookIssue, Book, Student
 from controllers.bookController import BookController
 from controllers.studentController import StudentController
@@ -133,3 +135,40 @@ class BookIssueController:
         except Exception as e:
             await db.rollback()
             raise Exception(f"Error fetching books issued to student: {str(e)}")
+
+    @staticmethod
+    async def getBookIssueReport(
+        db: AsyncSession,
+    ) -> List[IssueReportResponse]:
+        try:
+            result = await db.execute(select(BookIssue))
+            books_issued = result.scalars().all()
+
+            issue_report = []
+            for issue in books_issued:
+                student = await StudentController.getStudentById(db, issue.student_id)
+                if not student:
+                    raise HTTPException(status_code=404, detail="student not found")
+                book = await BookController.getBookById(db, issue.book_id)
+                if not book:
+                    raise HTTPException(status_code=404, detail="student not found")
+
+                is_overdue = date.today() > issue.due_date
+                is_returned = issue.return_date is not None
+
+                issue_report.append(
+                    IssueReportResponse(
+                        book=BookRead.model_validate(book),
+                        student=StudentRead.model_validate(student),
+                        is_overdue=is_overdue,
+                        is_returned=is_returned,
+                    )
+                )
+
+            return issue_report
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            await db.rollback()
+            raise Exception(f"Error fetching books reports: {str(e)}")

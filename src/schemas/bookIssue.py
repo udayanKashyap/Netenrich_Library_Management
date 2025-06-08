@@ -85,3 +85,10 @@ class BookIssueResponse(BaseModel):
 class IssuedBooksResponse(BaseModel):
     book: BookRead
     is_overdue: bool
+
+
+class IssueReportResponse(BaseModel):
+    book: BookRead
+    student: StudentRead
+    is_overdue: bool
+    is_returned: bool

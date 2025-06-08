@@ -6,6 +6,7 @@ from schemas.bookIssue import (
     BookReturnRequest,
     BookIssueResponse,
     IssuedBooksResponse,
+    IssueReportResponse,
 )
 from schemas.book import BookRead
 from config.db import get_db
@@ -57,11 +58,17 @@ async def get_books_issued_to_student(
     try:
         books_issued = await BookIssueController.getBooksIssuedToStudent(db, student_id)
         return {"books": books_issued}
-        # return {
-        #     "": [
-        #         BookRead.model_validate(book).model_dump() for book in books_issued
-        #     ]
-        # }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/", response_model=dict, status_code=201)
+async def get_book_issue_report(db: AsyncSession = Depends(get_db)):
+    try:
+        books_issued = await BookIssueController.getBookIssueReport(db)
+        return {"books": books_issued}
     except HTTPException:
         raise
     except Exception as e:

@@ -9,7 +9,7 @@ cli = typer.Typer()
 async def async_migrate():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    print("✅ Tables created.")
+    print("Tables created.")
 
 
 @cli.command()

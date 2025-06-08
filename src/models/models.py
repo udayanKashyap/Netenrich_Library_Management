@@ -71,3 +71,18 @@ class BookIssue(Base):
 
     def __str__(self) -> str:
         return f"Student: name:{self.student_id}, book:{self.book_id}, issued:{self.issue_date}"
+
+
+class ReminderHistory(Base):
+    __tablename__ = "ReminderHistory"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    student_id = Column(Integer, ForeignKey("Students.id"), nullable=False)
+    book_issue_id = Column(Integer, ForeignKey("BookIssues.id"), nullable=False)
+
+    reminder_type = Column(String(50), nullable=False)
+    sent_date = Column(Date, nullable=False, default=date.today)
+    days_before_due = Column(Integer, nullable=False)
+
+    created_at = Column(DateTime, default=datetime.now)

@@ -16,7 +16,8 @@ async def create_book(book_data: BookCreate, db: AsyncSession = Depends(get_db))
             "message": "book created successfully",
             "book": BookRead.model_validate(new_book).model_dump(),
         }
-
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -89,6 +90,8 @@ async def update_book(
         }
     except HTTPException:
         raise
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

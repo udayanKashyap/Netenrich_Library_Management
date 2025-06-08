@@ -20,6 +20,8 @@ async def create_student(
             "student": StudentRead.model_validate(new_student).model_dump(),
         }
 
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

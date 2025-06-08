@@ -10,10 +10,6 @@ router = APIRouter()
 
 @router.post("/ask")
 async def ask_question(request: QuestionRequest):
-    """
-    Webhook endpoint that accepts natural language questions about the library database
-    and returns streaming responses with SQL queries and results.
-    """
     if not request.question.strip():
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
@@ -23,6 +19,6 @@ async def ask_question(request: QuestionRequest):
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "X-Accel-Buffering": "no",  # For nginx
+            "X-Accel-Buffering": "no",
         },
     )

@@ -56,6 +56,7 @@ class BookIssue(Base):
     issue_date = Column(Date, nullable=False, default=date.today)
     due_date = Column(Date, nullable=False)
     return_date = Column(Date, nullable=True)
+    # return date if null means book is not returned yet
 
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

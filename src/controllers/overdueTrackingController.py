@@ -14,6 +14,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 
+# email controller (create, send, etc)
 class EmailController:
     def __init__(self, config: EmailConfig):
         self.config = config
@@ -48,6 +49,8 @@ class EmailController:
         return result
 
 
+# overdue functions controller
+# functions name describe their functions
 class OverdueTrackingController:
     def __init__(
         self,
@@ -228,6 +231,7 @@ class OverdueTrackingController:
         return subject, body
 
 
+# email schedule service controller
 class ScheduleController:
     def __init__(self, tracking_service: OverdueTrackingController):
         self.scheduler = AsyncIOScheduler()

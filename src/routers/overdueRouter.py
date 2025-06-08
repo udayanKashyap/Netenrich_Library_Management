@@ -39,20 +39,19 @@ async def lifespan(app: FastAPI):
         app.state.tracking_service = tracking_service
         app.state.scheduler_service = scheduler_service
 
-        print("Overdue tracking system initialized successfully")
+        print("Overdue tracking system started successfully")
         print("Email reminders will be sent daily at 12:00 AM")
 
     except Exception as e:
-        print(f"Failed to initialize overdue tracking system: {str(e)}")
+        print(f"Failed to initialize tracking system: {str(e)}")
 
     yield
 
-    # Shutdown: Clean up resources
-    print("Shutting down Library Management System...")
+    print("Shutting down Library Management System")
     try:
         if hasattr(app.state, "scheduler_service"):
             app.state.scheduler_service.stop()
-        print("Overdue tracking system stopped successfully")
+        print("Overdue tracking system stopped ")
     except Exception as e:
         print(f"Error during shutdown: {str(e)}")
 

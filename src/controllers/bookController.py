@@ -5,6 +5,8 @@ from models.models import Book
 from typing import List, Optional
 
 
+# Boook controller
+# all function names are descriptive of what they do
 class BookController:
     @staticmethod
     async def getBookById(db: AsyncSession, book_id: int) -> Optional[Book]:
@@ -16,7 +18,6 @@ class BookController:
 
     @staticmethod
     async def createBook(db: AsyncSession, book_data: BookCreate) -> Book:
-        """Create new book"""
         try:
             new_book = Book(
                 title=book_data.title,

@@ -5,6 +5,8 @@ from models.models import Student
 from typing import Optional, List
 
 
+# student controller
+# all functions names descriptive of their functions
 class StudentController:
     @staticmethod
     async def getStudentById(db: AsyncSession, student_id: int) -> Optional[Student]:

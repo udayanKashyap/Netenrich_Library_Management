@@ -18,6 +18,8 @@ from controllers.bookController import BookController
 from controllers.studentController import StudentController
 
 
+# Boook issue controller
+# all functions are self desciptive using their name
 class BookIssueController:
     @staticmethod
     async def issueBook(db: AsyncSession, issue_data: BookIssueRequest) -> BookIssue:
@@ -136,6 +138,7 @@ class BookIssueController:
             await db.rollback()
             raise Exception(f"Error fetching books issued to student: {str(e)}")
 
+    # create book issue report with all issued books, their overdue, return status
     @staticmethod
     async def getBookIssueReport(
         db: AsyncSession,

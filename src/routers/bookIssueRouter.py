@@ -1,7 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from controllers.bookIssueController import BookIssueController
-from schemas.bookIssue import BookIssueRequest, BookReturnRequest, BookIssueResponse
+from schemas.bookIssue import (
+    BookIssueRequest,
+    BookReturnRequest,
+    BookIssueResponse,
+    IssuedBooksResponse,
+)
 from schemas.book import BookRead
 from config.db import get_db
 from typing import Optional
@@ -51,11 +56,12 @@ async def get_books_issued_to_student(
 ):
     try:
         books_issued = await BookIssueController.getBooksIssuedToStudent(db, student_id)
-        return {
-            "books": [
-                BookRead.model_validate(book).model_dump() for book in books_issued
-            ]
-        }
+        return {"books": books_issued}
+        # return {
+        #     "": [
+        #         BookRead.model_validate(book).model_dump() for book in books_issued
+        #     ]
+        # }
     except HTTPException:
         raise
     except Exception as e:

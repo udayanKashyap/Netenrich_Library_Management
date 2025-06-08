@@ -80,3 +80,8 @@ class BookIssueResponse(BaseModel):
     student: StudentRead
 
     model_config = {"from_attributes": True}
+
+
+class IssuedBooksResponse(BaseModel):
+    book: BookRead
+    is_overdue: bool

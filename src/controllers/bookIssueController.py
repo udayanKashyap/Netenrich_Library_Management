@@ -2,8 +2,14 @@ from fastapi import HTTPException
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
+from datetime import date
 
-from schemas.bookIssue import BookIssueRequest, BookReturnRequest, BookIssueResponse
+from schemas.bookIssue import (
+    BookIssueRequest,
+    BookReturnRequest,
+    BookIssueResponse,
+    IssuedBooksResponse,
+)
 from schemas.book import BookRead
 from models.models import BookIssue, Book, Student
 from controllers.bookController import BookController
@@ -90,23 +96,35 @@ class BookIssueController:
             raise Exception(f"Error Creating book: {str(e)}")
 
     @staticmethod
-    async def getBooksIssuedToStudent(db: AsyncSession, student_id: int) -> List[Book]:
+    async def getBooksIssuedToStudent(
+        db: AsyncSession, student_id: int
+    ) -> List[IssuedBooksResponse]:
         try:
             student = await StudentController.getStudentById(db, student_id)
             if not student:
                 raise HTTPException(status_code=404, detail="student not found")
 
             result = await db.execute(
-                select(BookIssue.book_id).where(
+                select(BookIssue).where(
                     BookIssue.student_id == student_id,
                     BookIssue.return_date.is_(None),
                 )
             )
-            book_ids = result.scalars().all()
+            book_issue_records = result.scalars().all()
+            print(book_issue_records)
 
-            books_issued = [
-                await BookController.getBookById(db, book_id) for book_id in book_ids
-            ]
+            books_issued = []
+            for book_issue in book_issue_records:
+                book = await BookController.getBookById(db, book_issue.book_id)
+                if not book:
+                    continue
+                is_overdue = date.today() > book_issue.due_date
+                books_issued.append(
+                    IssuedBooksResponse(
+                        book=BookRead.model_validate(book),
+                        is_overdue=is_overdue,
+                    )
+                )
 
             return books_issued
 
